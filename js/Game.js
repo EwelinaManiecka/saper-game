@@ -24,6 +24,7 @@ class Game extends UI {
   #counter = new Counter();
   #timer = new Timer();
 
+  #isGameFinished = false;
   #numberOfRows = null;
   #numberOfCols = null;
   #numberOfMines = null;
@@ -54,10 +55,19 @@ class Game extends UI {
 
     this.#generateCells();
     this.#renderBoard();
+    this.#placeMinesInCells();
 
     this.#cellsElements = this.getElements(this.UiSelectors.cell);
 
     this.#addCellsEventListeners();
+  }
+  #endGame(isWin) {
+    this.#isGameFinished = true;
+    this.#timer.stopTimer();
+
+    if (!isWin) {
+      this.#revealMines();
+    }
   }
 
   #handleElements() {
@@ -87,12 +97,32 @@ class Game extends UI {
     });
   }
 
+  #placeMinesInCells() {
+    let minesToPlace = this.#numberOfMines;
+
+    while (minesToPlace) {
+      const rowIndex = this.#getRandomInteger(0, this.#numberOfRows - 1);
+      const colIndex = this.#getRandomInteger(0, this.#numberOfCols - 1);
+
+      const cell = this.#cells[rowIndex][colIndex];
+
+      const hasCellMine = cell.isMine;
+
+      if (!hasCellMine) {
+        cell.addMine();
+        minesToPlace--;
+      }
+    }
+  }
+
   #handleCellClick = (e) => {
     const target = e.target;
     const rowIndex = parseInt(target.getAttribute("data-y"), 10);
     const colIndex = parseInt(target.getAttribute("data-x"), 10);
 
-    this.#cells[rowIndex][colIndex].revealCell();
+    const cell = this.#cells[rowIndex][colIndex];
+
+    this.#clickCell(cell);
   };
 
   #handleCellContextmenu = (e) => {
@@ -117,11 +147,29 @@ class Game extends UI {
     }
   };
 
+  #clickCell(cell) {
+    if (cell.isMine) {
+      this.#endGame(false);
+    }
+    cell.revealCell();
+  }
+
+  #revealMines() {
+    this.#cells
+      .flat()
+      .filter(({ cell }) => isMine)
+      .forEach(cell == cell.revealCell());
+  }
+
   #setStyles() {
     document.documentElement.style.setProperty(
       "--cells-in-row",
       this.#numberOfCols
     );
+  }
+
+  #getRandomInteger(min, max) {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
   }
 }
 
