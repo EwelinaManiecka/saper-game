@@ -157,8 +157,8 @@ class Game extends UI {
   #revealMines() {
     this.#cells
       .flat()
-      .filter(({ cell }) => isMine)
-      .forEach(cell == cell.revealCell());
+      .filter(({ isMine }) => isMine)
+      .forEach((cell) => cell.revealCell());
   }
 
   #setStyles() {
