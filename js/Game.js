@@ -9,7 +9,7 @@ class Game extends UI {
       cols: 8,
       mines: 10,
     },
-    medium: {
+    normal: {
       rows: 16,
       cols: 16,
       mines: 40,
@@ -31,6 +31,12 @@ class Game extends UI {
   #cells = [];
   #cellsElements = null;
   #board = null;
+  #buttons = {
+    modal: null,
+    easy: null,
+    normal: null,
+    expert: null,
+  };
 
   initializeGame() {
     this.#handleElements();
@@ -72,6 +78,10 @@ class Game extends UI {
 
   #handleElements() {
     this.#board = this.getElement(this.UiSelectors.board);
+    this.#buttons.modal = this.getElement(this.UiSelectors.modalButton);
+    this.#buttons.easy = this.getElement(this.UiSelectors.easyButton);
+    this.#buttons.normal = this.getElement(this.UiSelectors.normalButton);
+    this.#buttons.expert = this.getElement(this.UiSelectors.expertButton);
   }
 
   #addCellsEventListeners() {
